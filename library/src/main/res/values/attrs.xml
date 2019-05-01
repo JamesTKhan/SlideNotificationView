@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+  <declare-styleable name="SlideNotificationView">
+    <attr name="slideNotification_enableLeftSideLayout" format="boolean"/>
+    <attr name="slideNotification_enableAutoCollapse" format="boolean"/>
+    <attr name="slideNotification_notificationText" format="string"/>
+    <attr name="slideNotification_notificationTextColor" format="color"/>
+    <attr name="slideNotification_notificationIcon" format="reference"/>
+  </declare-styleable>
+</resources>

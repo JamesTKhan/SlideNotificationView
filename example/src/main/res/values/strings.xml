@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">SlideNotificationExample</string>
+    <string name="activate_left_notification">Activate left Notification</string>
+    <string name="activate_right_notification">Activate right Notification</string>
+</resources>

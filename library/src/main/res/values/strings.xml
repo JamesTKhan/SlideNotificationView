@@ -1,0 +1,5 @@
+<resources>
+  <string name="app_name">SlideNotifications</string>
+  <string name="notification_new_message">New Message!</string>
+  <string name="notification_new_match">New Match!</string>
+</resources>
