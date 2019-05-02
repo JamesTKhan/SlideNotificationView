@@ -38,6 +38,8 @@ class SlideNotificationView : FrameLayout {
 
   private var customTouchListener: CustomTouchListener? = null
 
+  private var onSliderNotificationClickListener: OnSliderNotificationClickListener? = null
+
   /**
    *   Offset for not closing notification all the way. Gets calculated in onLayout
    */
@@ -249,9 +251,11 @@ class SlideNotificationView : FrameLayout {
       override fun onSingleTapUp() {
         if (notificationCollapsed)
           open()
-        else
-        //TODO: Handle notification click
+        else {
+          onSliderNotificationClickListener?.onSliderNotificationClicked()
           super.onSingleTapUp()
+        }
+
       }
 
     }
@@ -435,8 +439,13 @@ class SlideNotificationView : FrameLayout {
   }
 
   @Suppress("unused")// public method
-  fun setDraggable(boolean: Boolean){
+  fun setDraggable(boolean: Boolean) {
     customTouchListener?.setDraggable(boolean)
   }
+
+  fun setSliderNotificationClickListener(listener: OnSliderNotificationClickListener) {
+    this.onSliderNotificationClickListener = listener
+  }
 }
+
 
