@@ -46,7 +46,9 @@
       app:slideNotification_enableAutoCollapse="false"
       app:slideNotification_notificationText="@string/notification_new_match"
       app:slideNotification_notificationTextColor="@color/colorRed"
-      app:slideNotification_notificationIcon="@drawable/ic_favorite_border_red_24dp">
+      app:slideNotification_notificationIcon="@drawable/ic_favorite_border_red_24dp"
+      app:slideNotification_topPercentDraggableLimit="5"
+      app:slideNotification_bottomPercentDraggableLimit="5">
   </com.jpcodes.slidenotification.SlideNotificationView>
 
   <com.jpcodes.slidenotification.SlideNotificationView

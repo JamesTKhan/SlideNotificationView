@@ -15,7 +15,17 @@ import android.widget.ImageView
 import android.widget.TextView
 
 /**
- * Created by James on 4/24/2019.
+ * Default percentage used to determine how close to the top of the screen the view can be dragged to
+ */
+const val topPercentDraggableLimitDefault = 10
+
+/**
+ *Default percentage used to determine how close to the bottom of the screen the view can be dragged to
+ */
+const val bottomPercentDraggableLimitDefault = 10
+
+/**
+ * Created by James Pooley on 4/24/2019.
  **/
 class SlideNotificationView : FrameLayout {
 
@@ -25,6 +35,8 @@ class SlideNotificationView : FrameLayout {
   private var notificationTextView: TextView? = null
 
   private var notificationImageView: ImageView? = null
+
+  private var customTouchListener: CustomTouchListener? = null
 
   /**
    *   Offset for not closing notification all the way. Gets calculated in onLayout
@@ -80,10 +92,29 @@ class SlideNotificationView : FrameLayout {
    */
   private var notificationIconReference: Int? = null
 
+  /**
+   * Actual percentage used to determine how close to the top of the screen the view can be dragged to
+   */
+  private var topPercentDraggableLimit = topPercentDraggableLimitDefault
+
+  /**
+   * Actual percentage used to determine how close to the bottom of the screen the view can be dragged to
+   */
+  private var bottomPercentDraggableLimit = bottomPercentDraggableLimitDefault
+
   // Chained constructors
   constructor(context: Context) : this(context, null)
-  constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
-  constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
+
+  constructor(
+    context: Context,
+    attrs: AttributeSet?
+  ) : this(context, attrs, 0)
+
+  constructor(
+    context: Context,
+    attrs: AttributeSet?,
+    defStyleAttr: Int
+  ) : super(
       context, attrs,
       defStyleAttr
   ) {
@@ -117,6 +148,16 @@ class SlideNotificationView : FrameLayout {
           notificationIconReference = typedArray.getResourceId(
               R.styleable.SlideNotificationView_slideNotification_notificationIcon,
               R.drawable.ic_message_purple_24dp
+          )
+
+          topPercentDraggableLimit = typedArray.getInt(
+              R.styleable.SlideNotificationView_slideNotification_topPercentDraggableLimit,
+              topPercentDraggableLimitDefault
+          )
+
+          bottomPercentDraggableLimit = typedArray.getInt(
+              R.styleable.SlideNotificationView_slideNotification_bottomPercentDraggableLimit,
+              bottomPercentDraggableLimitDefault
           )
 
 
@@ -166,7 +207,12 @@ class SlideNotificationView : FrameLayout {
    * Start touch listeners
    */
   private fun setListeners() {
-    mainLayout.setOnTouchListener(object : OnSwipeTouchListener(context) {
+    customTouchListener = object : CustomTouchListener(
+        context,
+        topPercentDraggableLimit,
+        bottomPercentDraggableLimit
+    ) {
+
       override fun onSwipeLeft() {
         Log.d("SlideLog", "Swipe left")
 
@@ -195,8 +241,10 @@ class SlideNotificationView : FrameLayout {
           super.onSingleTapUp()
       }
 
-    })
+    }
 
+
+    mainLayout.setOnTouchListener(customTouchListener)
   }
 
   override fun onLayout(
@@ -218,16 +266,44 @@ class SlideNotificationView : FrameLayout {
   }
 
   /**
+   * Collapse the view after the timer ends
+   */
+  private fun startAutoCollapseTimer() {
+    autoCloseHandler.postDelayed({
+      collapse()
+    }, autoCollapseTime)
+
+  }
+
+  /**
+   * Utility method to get color safely depending on API level
+   */
+  private fun getColor(@ColorRes resId: Int): Int {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      resources.getColor(resId, null)
+    } else {
+      @Suppress("DEPRECATION")
+      resources.getColor(resId)
+    }
+
+  }
+
+  /**
+   * Public methods available for use
+   **/
+
+  /**
    * Open (Slide in) the view
    */
   fun open() {
     if (width > 0 && (notificationCollapsed || !notificationVisible)) {
 
       // Animate open
-      ObjectAnimator.ofFloat(this, "translationX", 0f).apply {
-        duration = slideAnimationDuration
-        start()
-      }
+      ObjectAnimator.ofFloat(this, "translationX", 0f)
+          .apply {
+            duration = slideAnimationDuration
+            start()
+          }
 
       notificationCollapsed = false
       notificationVisible = true
@@ -251,10 +327,11 @@ class SlideNotificationView : FrameLayout {
       else
         translationX + width - slideClosedOffset
 
-      ObjectAnimator.ofFloat(this, "translationX", newTranslation).apply {
-        duration = slideAnimationDuration
-        start()
-      }
+      ObjectAnimator.ofFloat(this, "translationX", newTranslation)
+          .apply {
+            duration = slideAnimationDuration
+            start()
+          }
 
       notificationCollapsed = true
     }
@@ -273,23 +350,14 @@ class SlideNotificationView : FrameLayout {
         translationX + width
 
 
-      ObjectAnimator.ofFloat(this, "translationX", newTranslation).apply {
-        duration = slideAnimationDuration
-        start()
-      }
+      ObjectAnimator.ofFloat(this, "translationX", newTranslation)
+          .apply {
+            duration = slideAnimationDuration
+            start()
+          }
 
       notificationVisible = false
     }
-  }
-
-  /**
-   * Collapse the view after the timer ends
-   */
-  private fun startAutoCollapseTimer() {
-    autoCloseHandler.postDelayed({
-      collapse()
-    }, autoCollapseTime)
-
   }
 
   /**
@@ -302,6 +370,7 @@ class SlideNotificationView : FrameLayout {
   /**
    * Sets the text color in the UI to the given [resourceId]
    */
+  @Suppress("MemberVisibilityCanBePrivate")
   fun setNotificationTextColor(@ColorInt resourceId: Int) {
     this.notificationTextView?.setTextColor(resourceId)
   }
@@ -335,17 +404,21 @@ class SlideNotificationView : FrameLayout {
   }
 
   /**
-   * Utility method to get color safely depending on API level
+   * Programmatically change the top Y limit in percentage. Calls the touch listener
+   * to set and recalculate the Y limit in pixels
    */
-  private fun getColor(@ColorRes resId: Int): Int {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      resources.getColor(resId, null)
-    } else {
-      @Suppress("DEPRECATION")
-      resources.getColor(resId)
-    }
-
+  @Suppress("unused")// public method
+  fun setTopPercentDraggableLimit(percent: Int) {
+    customTouchListener?.setTopPercentDraggableLimit(percent)
   }
 
+  /**
+   * Programmatically change the bottom Y limit in percentage. Calls the touch listener
+   * to set and recalculate the Y limit in pixels
+   */
+  @Suppress("unused")// public method
+  fun setBottomPercentDraggableLimit(percent: Int) {
+    customTouchListener?.setBottomPercentDraggableLimit(percent)
+  }
 }
 

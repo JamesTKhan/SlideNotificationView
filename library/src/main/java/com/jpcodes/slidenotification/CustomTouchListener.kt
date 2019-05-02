@@ -8,19 +8,23 @@ import android.view.GestureDetector.SimpleOnGestureListener
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnTouchListener
+import com.jpcodes.slidenotification.utils.ScreenUtils
 
 /**
- * Created by James on 4/24/2019.
+ * Created by James Pooley on 4/24/2019.
  * Detects left and right swipes across a view.
  **/
-
 const val SWIPE_DISTANCE_THRESHOLD = 100
 const val SWIPE_VELOCITY_THRESHOLD = 100
 
 /** Movement threshold to cancel a long press timer after ACTION_DOWN press **/
 const val LONG_PRESS_MOVEMENT_CANCEL_THRESHOLD = 100
 
-open class OnSwipeTouchListener(context: Context) : OnTouchListener {
+open class CustomTouchListener(
+  context: Context,
+  private var topPercentDraggableLimit: Int,
+  private var bottomPercentDraggableLimit: Int
+) : OnTouchListener {
 
   private val gestureDetector: GestureDetector
 
@@ -32,9 +36,36 @@ open class OnSwipeTouchListener(context: Context) : OnTouchListener {
   private var p1: Point = Point(0, 0)
   private var p2: Point = Point(0, 0)
 
+  /**
+   * Screen height of device in pixels
+   */
+  private var screenHeight: Int
+  //private var screenWidth: Int
+
+  private var toolbarHeight: Int
+  private var statusBarHeight: Int
+
+  /**
+   * The max allowed Y position in pixels the view can be dragged to
+   */
+  private var maxAllowedY: Int
+
+  /**
+   * The minimum allowed Y position in pixels the view can be dragged to
+   */
+  private var minAllowedY: Int
+
   init {
     gestureDetector = GestureDetector(context, GestureListener())
     gestureDetector.setIsLongpressEnabled(false)
+
+    screenHeight = ScreenUtils.getScreenHeight(context)
+    toolbarHeight = ScreenUtils.getToolBarHeight(context)
+    statusBarHeight = ScreenUtils.getStatusBarHeight(context)
+
+    maxAllowedY = calculateDraggableMaxY()
+    minAllowedY = calculateDraggableMinY()
+
   }
 
   private val longPressRunnable = Runnable {
@@ -54,7 +85,7 @@ open class OnSwipeTouchListener(context: Context) : OnTouchListener {
     event: MotionEvent
   ): Boolean {
 
-    when(event.action) {
+    when (event.action) {
 
       MotionEvent.ACTION_DOWN -> {
         deltaX = v.x - event.rawX
@@ -67,14 +98,19 @@ open class OnSwipeTouchListener(context: Context) : OnTouchListener {
       }
 
       MotionEvent.ACTION_MOVE -> {
+
         p2 = Point(event.x.toInt(), event.y.toInt())
 
         val movementAmount =
           Math.sqrt(Math.pow(p1.x.toDouble() - p2.x, 2.0) + Math.pow(p1.y.toDouble() - p2.y, 2.0))
 
         if (longPress) { // drag mode
-          v.y = event.rawY + deltaY // update position to the most recent
+
+          val newY = event.rawY + deltaY
+          if (newY > minAllowedY && newY < (maxAllowedY - v.height))
+            v.y = newY // update position to the most recent
           //v.x = event.rawX + deltaX
+
         } else if ((movementAmount > LONG_PRESS_MOVEMENT_CANCEL_THRESHOLD || movementAmount < -LONG_PRESS_MOVEMENT_CANCEL_THRESHOLD) && !longPress) {
           longPressHandler.removeCallbacksAndMessages(null) // cancel long press timer
           longPress = false
@@ -96,6 +132,34 @@ open class OnSwipeTouchListener(context: Context) : OnTouchListener {
 
     return false
   }
+
+  fun setTopPercentDraggableLimit(percent: Int) {
+    this.topPercentDraggableLimit = percent
+    minAllowedY = calculateDraggableMinY() // recalculate
+  }
+
+  fun setBottomPercentDraggableLimit(percent: Int) {
+    this.bottomPercentDraggableLimit = percent
+    maxAllowedY = calculateDraggableMaxY() // recalculate
+  }
+
+  /**
+   * Returns the maximum Y in pixels based on draggable limits
+   */
+  private fun calculateDraggableMaxY(): Int {
+    val draggablePixelLimitBottom =
+      (screenHeight * (bottomPercentDraggableLimit.toFloat() / 100.0f)).toInt()
+
+    return screenHeight - draggablePixelLimitBottom - toolbarHeight - statusBarHeight
+  }
+
+  /**
+   * Returns the minimum Y in pixels based on draggable limits
+   */
+  private fun calculateDraggableMinY(): Int {
+    return (screenHeight * (topPercentDraggableLimit.toFloat() / 100.0f)).toInt()
+  }
+
 
   private inner class GestureListener : SimpleOnGestureListener() {
 
@@ -126,4 +190,5 @@ open class OnSwipeTouchListener(context: Context) : OnTouchListener {
     }
 
   }
+
 }
