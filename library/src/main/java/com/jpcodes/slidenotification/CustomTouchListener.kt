@@ -127,6 +127,7 @@ open class CustomTouchListener(
         MotionEvent.ACTION_UP -> {
           longPressHandler.removeCallbacksAndMessages(null)
           longPress = false
+          v.performClick()
         }
 
       }
