@@ -102,6 +102,11 @@ class SlideNotificationView : FrameLayout {
    */
   private var bottomPercentDraggableLimit = bottomPercentDraggableLimitDefault
 
+  /**
+   * Is the view draggable
+   */
+  private var draggable: Boolean = true
+
   // Chained constructors
   constructor(context: Context) : this(context, null)
 
@@ -160,6 +165,11 @@ class SlideNotificationView : FrameLayout {
               bottomPercentDraggableLimitDefault
           )
 
+          draggable = typedArray.getBoolean(
+              R.styleable.SlideNotificationView_slideNotification_draggable,
+              draggable
+          )
+
 
           Log.d("SlideLog", "Left Enabled: $leftLayoutEnabled")
           Log.d("SlideLog", "Auto Collapse Enabled: $autoCollapseEnabled")
@@ -183,8 +193,8 @@ class SlideNotificationView : FrameLayout {
     notificationTextView = findViewById(R.id.slide_notification_text)
     notificationImageView = findViewById(R.id.slide_notification_icon)
 
-    applyAttributesFromXML()
     setListeners()
+    applyAttributesFromXML()
   }
 
   private fun applyAttributesFromXML() {
@@ -201,6 +211,9 @@ class SlideNotificationView : FrameLayout {
     notificationTextColorReference?.let {
       setNotificationTextColor(it)
     }
+
+    customTouchListener?.setDraggable(draggable)
+
   }
 
   /**
@@ -419,6 +432,11 @@ class SlideNotificationView : FrameLayout {
   @Suppress("unused")// public method
   fun setBottomPercentDraggableLimit(percent: Int) {
     customTouchListener?.setBottomPercentDraggableLimit(percent)
+  }
+
+  @Suppress("unused")// public method
+  fun setDraggable(boolean: Boolean){
+    customTouchListener?.setDraggable(boolean)
   }
 }
 

@@ -8,5 +8,6 @@
     <attr name="slideNotification_notificationIcon" format="reference"/>
     <attr name="slideNotification_topPercentDraggableLimit" format="integer"/>
     <attr name="slideNotification_bottomPercentDraggableLimit" format="integer"/>
+    <attr name="slideNotification_draggable" format="boolean"/>
   </declare-styleable>
 </resources>

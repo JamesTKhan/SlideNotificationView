@@ -40,4 +40,6 @@ class MainActivity : AppCompatActivity() {
     rightSlideView.setNotificationIcon(getDrawable(R.drawable.ic_message_purple_24dp)!!)
     rightSlideView.open()
   }
+
+
 }

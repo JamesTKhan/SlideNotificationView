@@ -55,6 +55,11 @@ open class CustomTouchListener(
    */
   private var minAllowedY: Int
 
+  /**
+   * Should dragging be allowed
+   */
+  private var draggable: Boolean = true
+
   init {
     gestureDetector = GestureDetector(context, GestureListener())
     gestureDetector.setIsLongpressEnabled(false)
@@ -85,44 +90,48 @@ open class CustomTouchListener(
     event: MotionEvent
   ): Boolean {
 
-    when (event.action) {
 
-      MotionEvent.ACTION_DOWN -> {
-        deltaX = v.x - event.rawX
-        deltaY = v.y - event.rawY
+    if (draggable) {
+      when (event.action) {
 
-        p1 = Point(event.x.toInt(), event.y.toInt())
+        MotionEvent.ACTION_DOWN -> {
+          deltaX = v.x - event.rawX
+          deltaY = v.y - event.rawY
 
-        // Start a long press timer
-        longPressHandler.postDelayed(longPressRunnable, 500)
-      }
+          p1 = Point(event.x.toInt(), event.y.toInt())
 
-      MotionEvent.ACTION_MOVE -> {
+          // Start a long press timer
+          longPressHandler.postDelayed(longPressRunnable, 500)
+        }
 
-        p2 = Point(event.x.toInt(), event.y.toInt())
+        MotionEvent.ACTION_MOVE -> {
 
-        val movementAmount =
-          Math.sqrt(Math.pow(p1.x.toDouble() - p2.x, 2.0) + Math.pow(p1.y.toDouble() - p2.y, 2.0))
+          p2 = Point(event.x.toInt(), event.y.toInt())
 
-        if (longPress) { // drag mode
+          val movementAmount =
+            Math.sqrt(Math.pow(p1.x.toDouble() - p2.x, 2.0) + Math.pow(p1.y.toDouble() - p2.y, 2.0))
 
-          val newY = event.rawY + deltaY
-          if (newY > minAllowedY && newY < (maxAllowedY - v.height))
-            v.y = newY // update position to the most recent
-          //v.x = event.rawX + deltaX
+          if (longPress) { // drag mode
 
-        } else if ((movementAmount > LONG_PRESS_MOVEMENT_CANCEL_THRESHOLD || movementAmount < -LONG_PRESS_MOVEMENT_CANCEL_THRESHOLD) && !longPress) {
-          longPressHandler.removeCallbacksAndMessages(null) // cancel long press timer
+            val newY = event.rawY + deltaY
+            if (newY > minAllowedY && newY < (maxAllowedY - v.height))
+              v.y = newY // update position to the most recent
+            //v.x = event.rawX + deltaX
+
+          } else if ((movementAmount > LONG_PRESS_MOVEMENT_CANCEL_THRESHOLD || movementAmount < -LONG_PRESS_MOVEMENT_CANCEL_THRESHOLD) && !longPress) {
+            longPressHandler.removeCallbacksAndMessages(null) // cancel long press timer
+            longPress = false
+          }
+        }
+
+        MotionEvent.ACTION_UP -> {
+          longPressHandler.removeCallbacksAndMessages(null)
           longPress = false
         }
-      }
 
-      MotionEvent.ACTION_UP -> {
-        longPressHandler.removeCallbacksAndMessages(null)
-        longPress = false
       }
-
     }
+
 
     // Send to GestureDetector after our custom logic for consuming flings, etc..
     if (gestureDetector.onTouchEvent(event)) {
@@ -141,6 +150,10 @@ open class CustomTouchListener(
   fun setBottomPercentDraggableLimit(percent: Int) {
     this.bottomPercentDraggableLimit = percent
     maxAllowedY = calculateDraggableMaxY() // recalculate
+  }
+
+  fun setDraggable(boolean: Boolean){
+    this.draggable = boolean
   }
 
   /**
