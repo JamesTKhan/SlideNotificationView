@@ -193,7 +193,11 @@ class SlideNotificationView : FrameLayout {
 
     // Get our views
     notificationTextView = findViewById(R.id.slide_notification_text)
-    notificationImageView = findViewById(R.id.slide_notification_icon)
+
+    notificationImageView = if (leftLayoutEnabled)
+      findViewById(R.id.slide_notification_icon_left)
+    else
+      findViewById(R.id.slide_notification_icon)
 
     setListeners()
     applyAttributesFromXML()
