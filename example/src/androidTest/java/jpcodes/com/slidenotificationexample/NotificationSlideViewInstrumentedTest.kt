@@ -9,9 +9,14 @@ import android.support.test.espresso.assertion.ViewAssertions.matches
 import android.support.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed
 import android.support.test.espresso.matcher.ViewMatchers.isDisplayed
 import android.support.test.espresso.matcher.ViewMatchers.withId
+import android.support.test.internal.util.Checks
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
+import android.view.View
+import org.hamcrest.Description
+import org.hamcrest.Matcher
 import org.hamcrest.Matchers.not
+import org.hamcrest.TypeSafeMatcher
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -101,6 +106,7 @@ class NotificationSlideViewInstrumentedTest {
     openRightSlideView()
     Thread.sleep(6500) // waiting for view to auto close
     onView(withId(R.id.slide_notification_icon)).perform(click())
+    Thread.sleep(500) // waiting for view to fully open
     onView(withId(R.id.right_slide_notification_view)).check(matches(isCompletelyDisplayed()))
   }
 
@@ -113,6 +119,16 @@ class NotificationSlideViewInstrumentedTest {
     onView(withId(R.id.slide_notification_icon_left)).perform(click())
     Thread.sleep(500)
     onView(withId(R.id.left_slide_notification_view)).check(matches(isCompletelyDisplayed()))
+  }
+
+  @Test
+  fun check_styleChangesApply() {
+    val darkGrey = activityTestRule.activity.resources.getColor(R.color.colorDarkGrey)
+    openRightSlideView()
+    Thread.sleep(500)
+    onView(withId(R.id.right_style_change)).perform(click()) // click style change button
+    Thread.sleep(150)
+    onView(withId(R.id.notification_slide_in_fragment_container)).check(matches(hasColor(darkGrey)))
   }
 
   private fun openLeftSlideView() {
@@ -129,6 +145,26 @@ class NotificationSlideViewInstrumentedTest {
 
   private fun clickRightSlideView() {
     onView(withId(R.id.right_slide_notification_view)).perform(click())
+  }
+
+  /**
+   * In the application we tag() an item with the color it is assigned.
+   *
+   * This allows us to check that the color was assigned as expected
+   */
+  private fun hasColor(colorRes: Int): Matcher<View> {
+    Checks.checkNotNull(colorRes)
+
+    return object : TypeSafeMatcher<View>() {
+      override fun describeTo(description: Description?) {
+        description?.appendText("background color: $colorRes")
+      }
+
+      override fun matchesSafely(item: View?): Boolean {
+        val backgroundColor = (item?.tag as Int)
+        return backgroundColor == colorRes
+      }
+    }
   }
 
 }

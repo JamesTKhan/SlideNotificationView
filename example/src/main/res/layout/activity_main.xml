@@ -16,7 +16,7 @@
       android:text="@string/activate_left_notification"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintBottom_toTopOf="@+id/notif_guide"/>
+      app:layout_constraintBottom_toTopOf="@+id/activate_right_button"/>
 
   <Button
       android:id="@+id/activate_right_button"
@@ -25,7 +25,17 @@
       android:text="@string/activate_right_notification"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toBottomOf="@+id/notif_guide"/>
+      app:layout_constraintBottom_toTopOf="@+id/notif_guide"/>
+
+  <Button
+      android:id="@+id/right_style_change"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="@string/change_right_slider_style"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/notif_guide"
+      android:enabled="false"/>
 
   <android.support.constraint.Guideline
       android:id="@+id/notif_guide"

@@ -5,6 +5,7 @@
     <attr name="slideNotification_enableAutoCollapse" format="boolean"/>
     <attr name="slideNotification_notificationText" format="string"/>
     <attr name="slideNotification_notificationTextColor" format="color"/>
+    <attr name="slideNotification_notificationBackgroundColor" format="color"/>
     <attr name="slideNotification_notificationIcon" format="reference"/>
     <attr name="slideNotification_topPercentDraggableLimit" format="integer"/>
     <attr name="slideNotification_bottomPercentDraggableLimit" format="integer"/>

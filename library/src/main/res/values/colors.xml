@@ -2,4 +2,5 @@
 <resources>
   <color name="colorDeepPurpleMaterial500">#673AB7</color>
   <color name="colorRed">#AF2D2D</color>
+  <color name="white">#FFFFFF</color>
 </resources>

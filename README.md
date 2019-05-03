@@ -4,6 +4,7 @@ This is a custom view written in Kotlin to use for visibly notifying the user of
 I needed a way to notify users of an event but I did not want to block visibility of the top or bottom of the screen so I created this library.<br/><br/>
 <img src="preview.gif" alt="Example" width=40% />
 <img src="preview_drag.gif" alt="Example dragging" width=40% align="right"/>
+<img src="preview_change_style.gif" alt="Example styling" width=40%/>
 <br/>
 ## Getting Started
 
@@ -55,6 +56,7 @@ You can customize the view through XML attributes or programmatically. Example u
     app:slideNotification_enableAutoCollapse="false"
     app:slideNotification_notificationText="@string/notification_new_match"
     app:slideNotification_notificationTextColor="@color/colorRed"
+    app:slideNotification_notificationBackgroundColor="@color/colorBackground"
     app:slideNotification_notificationIcon="@drawable/ic_favorite_border_red_24dp"
     app:slideNotification_topPercentDraggableLimit="5"
     app:slideNotification_bottomPercentDraggableLimit="5">
@@ -66,6 +68,7 @@ Example of methods for customizing programmatically
 rightSlideView.setNotificationText(getString(R.string.notification_new_message))
 rightSlideView.setNotificationIcon(getDrawable(R.drawable.ic_message_purple_24dp)!!)
 rightSlideView.setNotificationTextColor(resources.getColor(R.color.colorDeepPurpleMaterial500))
+rightSlideView.setBackgroundColor(resources.getColor(R.color.colorBackground))
 rightSlideView.setDraggable(false)
 rightSlideView.enableAutoCollapse(false)
 rightSlideView.setTopPercentDraggableLimit(10)

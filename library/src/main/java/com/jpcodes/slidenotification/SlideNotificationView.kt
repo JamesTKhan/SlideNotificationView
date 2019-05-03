@@ -2,11 +2,13 @@ package com.jpcodes.slidenotification
 
 import android.animation.ObjectAnimator
 import android.content.Context
+import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Handler
 import android.support.annotation.ColorInt
 import android.support.annotation.ColorRes
+import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
@@ -31,6 +33,8 @@ class SlideNotificationView : FrameLayout {
 
   /** Holds main Layout [View] **/
   private var mainLayout: View
+
+  private var constraintLayout: View
 
   private var notificationTextView: TextView? = null
 
@@ -88,6 +92,11 @@ class SlideNotificationView : FrameLayout {
    * Notification text color reference passed from XML
    */
   private var notificationTextColorReference: Int? = null
+
+  /**
+   * Notification background color reference passed from XML
+   */
+  private var notificationBackgroundColorReference: Int? = null
 
   /**
    * Notification Icon reference passed from XML
@@ -152,6 +161,11 @@ class SlideNotificationView : FrameLayout {
               getColor(R.color.colorDeepPurpleMaterial500)
           )
 
+          notificationBackgroundColorReference = typedArray.getColor(
+              R.styleable.SlideNotificationView_slideNotification_notificationBackgroundColor,
+              getColor(R.color.white)
+          )
+
           notificationIconReference = typedArray.getResourceId(
               R.styleable.SlideNotificationView_slideNotification_notificationIcon,
               R.drawable.ic_message_purple_24dp
@@ -192,6 +206,11 @@ class SlideNotificationView : FrameLayout {
     mainLayout.isFocusable = true
 
     // Get our views
+    constraintLayout = if (leftLayoutEnabled)
+      findViewById<ConstraintLayout>(R.id.notification_slide_in_fragment_container_left)
+    else
+      findViewById<ConstraintLayout>(R.id.notification_slide_in_fragment_container)
+
     notificationTextView = findViewById(R.id.slide_notification_text)
 
     notificationImageView = if (leftLayoutEnabled)
@@ -218,9 +237,14 @@ class SlideNotificationView : FrameLayout {
       setNotificationTextColor(it)
     }
 
+    notificationBackgroundColorReference?.let {
+      setBackgroundColor(it)
+    }
+
     customTouchListener?.setDraggable(draggable)
 
   }
+
 
   /**
    * Start touch listeners
@@ -445,6 +469,17 @@ class SlideNotificationView : FrameLayout {
   @Suppress("unused")// public method
   fun setDraggable(boolean: Boolean) {
     customTouchListener?.setDraggable(boolean)
+  }
+
+  /**
+   * Set the background color of the slide notification view via the given [color]
+   *
+   * Overriding the method as the background has rounded corners which requires some additional logic
+   * to properly change the color
+   */
+  override fun setBackgroundColor(color: Int) {
+    constraintLayout.background?.setColorFilter(color, PorterDuff.Mode.SRC_ATOP)
+    constraintLayout.tag = color // Set the color to the tag for testing to pull that color and verify
   }
 
   fun setSliderNotificationClickListener(listener: OnSliderNotificationClickListener) {
