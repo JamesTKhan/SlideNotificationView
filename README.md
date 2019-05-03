@@ -3,7 +3,7 @@
 This is a custom view written in Kotlin to use for visibly notifying the user of an event while inside the app.
 I needed a way to notify users of an event but I did not want to block visibility of the top or bottom of the screen so I created this library.
 
-![](preview.gif) 
+<img src="preview.gif" alt="Example" width=50% />
 
 ## Getting Started
 
