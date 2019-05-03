@@ -1,10 +1,10 @@
 # Slide Notification View
 
 This is a custom view written in Kotlin to use for visibly notifying the user of an event while inside the app.
-I needed a way to notify users of an event but I did not want to block visibility of the top or bottom of the screen so I created this library.
-
-<img src="preview.gif" alt="Example" width=50% />
-
+I needed a way to notify users of an event but I did not want to block visibility of the top or bottom of the screen so I created this library.<br/><br/>
+<img src="preview.gif" alt="Example" width=40% />
+<img src="preview_drag.gif" alt="Example dragging" width=40% align="right"/>
+<br/>
 ## Getting Started
 
 Add the dependency to you applications build.gradle file:
