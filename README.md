@@ -9,12 +9,12 @@ I needed a way to notify users of an event but I did not want to block visibilit
 
 Add the dependency to you applications build.gradle file:
 
-```
+```groovy
 implementation ...
 ```
 
 Place the view in your layouts XML and position it on the edge of the screen:
-```
+```xml
 <com.jpcodes.slidenotification.SlideNotificationView
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -28,7 +28,7 @@ Place the view in your layouts XML and position it on the edge of the screen:
 When the view is collapsed, it can be swiped open or tapped to open it. Once fully open the view can be swiped back
 to close it. If tapped while open you can detect that tap by using the OnSliderNotificationClickListener:
 
-```
+```java
 rightSlideView.setSliderNotificationClickListener(object : OnSliderNotificationClickListener {
   override fun onSliderNotificationClicked() {
     Snackbar.make(mainLayout, "Right Notification Clicked", Snackbar.LENGTH_SHORT)
@@ -42,7 +42,7 @@ rightSlideView.setSliderNotificationClickListener(object : OnSliderNotificationC
 
 You can customize the view through XML attributes or programmatically. Example using some of the XML attributes:
 
-```
+```xml
 <com.jpcodes.slidenotification.SlideNotificationView
     android:id="@+id/left_slide_notification_view"
     android:layout_width="wrap_content"
@@ -62,7 +62,7 @@ You can customize the view through XML attributes or programmatically. Example u
 ```
 
 Example of methods for customizing programmatically
-```
+``` kotlin
 rightSlideView.setNotificationText(getString(R.string.notification_new_message))
 rightSlideView.setNotificationIcon(getDrawable(R.drawable.ic_message_purple_24dp)!!)
 rightSlideView.setNotificationTextColor(resources.getColor(R.color.colorDeepPurpleMaterial500))
@@ -83,9 +83,11 @@ example app (NotificationSlideViewInstrumentedTest.kt). The tests can be execute
 
 ## Build Info
 
+```
 compileSdkVersion 28
 minSdkVersion 21
 targetSdkVersion 28
+```
 
 ## Authors
 
