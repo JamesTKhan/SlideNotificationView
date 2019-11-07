@@ -1,3 +1,4 @@
+[![](https://jitpack.io/v/jpooleycodes/SlideNotificationView.svg)](https://jitpack.io/#jpooleycodes/SlideNotificationView)
 # Slide Notification View
 
 This is a custom view written in Kotlin to use for visibly notifying the user of an event while inside the app.
@@ -8,10 +9,10 @@ I needed a way to notify users of an event but I did not want to block visibilit
 <br/>
 ## Getting Started
 
-Add the dependency to you applications build.gradle file:
+Add the dependency to you applications with JitPack in build.gradle file:
 
 ```groovy
-implementation ...
+implementation 'com.github.jpooleycodes:SlideNotificationView:533cf2c420'
 ```
 
 Place the view in your layouts XML and position it on the edge of the screen:
